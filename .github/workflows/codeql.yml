@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "main" ]
   schedule:
-    - cron: '30 5 * * 1' # Runs at 05:30 UTC on Mondays
+    - cron: '30 5 * * 1'
 
 jobs:
   analyze:
@@ -31,14 +31,12 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
+        # Allocate 4GB of RAM to the analysis. The runner has ~7GB total.
+        # You can increase this to ~6000 if needed.
+        ram: 4096
 
-    # ❗ IMPORTANT: This is the manual build step you need to add/modify.
+    # Your manual build step
     - name: Autobuild
-      # This example uses Gradle. Replace with your project's build command.
-      # Common examples:
-      # For Android: ./gradlew assembleDebug
-      # For Backend: ./gradlew build
-      # For Maven:   mvn -B package --file pom.xml
       run: |
         chmod +x gradlew
         ./gradlew build

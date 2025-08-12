@@ -1,0 +1,49 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '30 5 * * 1' # Runs at 05:30 UTC on Mondays
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java-kotlin' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+
+    # ❗ IMPORTANT: This is the manual build step you need to add/modify.
+    - name: Autobuild
+      # This example uses Gradle. Replace with your project's build command.
+      # Common examples:
+      # For Android: ./gradlew assembleDebug
+      # For Backend: ./gradlew build
+      # For Maven:   mvn -B package --file pom.xml
+      run: |
+        chmod +x gradlew
+        ./gradlew build
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
